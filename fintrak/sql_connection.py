@@ -5,8 +5,8 @@ from sql_maped_db import Base
 
 #URL OF THE DATABASE (postgreSQL)
 username = ("postgres")
-password = quote_plus("demo@8888")
-db_name = ("Finance Analyser Database")
+password = quote_plus("password123")
+db_name = ("Finance_Tracker_DB")
 
 db_url = f"postgresql+psycopg2://{username}:{password}@localhost:5432/{db_name}"
 
