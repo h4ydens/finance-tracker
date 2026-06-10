@@ -1,6 +1,8 @@
 from urllib.parse import quote_plus
 from sqlalchemy import create_engine
 
+from sql_maped_db import Base
+
 #URL OF THE DATABASE (postgreSQL)
 username = ("postgres")
 password = quote_plus("demo@8888")
