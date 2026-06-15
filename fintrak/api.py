@@ -108,12 +108,24 @@ def get_dashboard(credentials: HTTPAuthorizationCredentials = Depends(security))
     this_month = db.query(Expense).filter(Expense.userid == userid, Expense.date_spent >= date(today.year, today.month, 1)).all()
     this_month_sum = sum(e.amount for e in this_month)
 
+    #show the history of expenses in bottom tab
+    recent = db.query(Expense).filter(Expense.userid == userid).order_by(Expense.date_spent.desc()).limit(5).all()
+    recent_list = [
+        {
+            "amount": e.amount,
+            "description": e.description,
+            "date": str(e.date_spent)
+        }
+        for e in recent
+    ]
+
     db.close()
 
     return {"total_income": income_sum,
             "total_expenses": expense_sum,
             "balance": income_sum - expense_sum,
-            "this_month": this_month_sum
+            "this_month": this_month_sum,
+            "recent_transactions": recent_list
         }
 
  

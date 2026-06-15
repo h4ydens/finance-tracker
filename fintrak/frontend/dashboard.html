@@ -51,7 +51,7 @@
         <!--some more information-->
         <div class="card">
             <div class="card-title">Recent Transactions</div>
-            <div class="placeholder-block tall">Transactions list placeholder</div>
+            <div class="placeholder-block tall" id="recent-transactions">Loading...</div>
         </div>
     </div>
     <script>
@@ -67,13 +67,30 @@
         //
         .then(r => r.json())
         .then(data => {
+            console.log(data)
             document.getElementById("total-income").textContent = "$" + data.total_income
             document.getElementById("total-expenses").textContent = "$" + data.total_expenses
             document.getElementById("balance").textContent        = "$" + data.balance
             document.getElementById("this-month").textContent     = "$" + data.this_month
+
+            const container = document.getElementById("recent-transactions")
+            if (data.recent_transactions.length === 0) {
+                container.textContent = "No transactions yet"
+            } 
+            else {
+                container.innerHTML = data.recent_transactions.map(t => `
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; padding:12px 0; border-bottom:1px solid var(--border); align-items:center;">
+                        <span>${t.description || "No description"}</span>
+                        <span style="text-align:center; color:var(--text-muted);">${t.date}</span>
+                        <span style="text-align:right; color:#e07070;">-$${t.amount}</span>
+                    </div>
+                `).join("")
+    }
         })
         //throw error if fetch fails
         .catch(err => console.error("Failed to load dashboard:", err))
+
+
     </script>
 </body>
 </html>
