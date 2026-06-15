@@ -27,7 +27,7 @@ class LoginRequest(BaseModel):
 
 
 #endpoints
-
+#test get users query
 @app.get("/users")
 def get_users():
     db = SessionLocal()
@@ -35,7 +35,7 @@ def get_users():
     db.close()
     return [{"userid": u.userid, "username": u.username, "email": u.email} for u in users]
  
- 
+#allow a person to signup as a user
 @app.post("/register")
 def register(data: RegisterRequest):
     db = SessionLocal()
@@ -62,7 +62,7 @@ def register(data: RegisterRequest):
     db.close()
     return {"message": "Account created successfully"}
  
- 
+#get the user to login
 @app.post("/login")
 def login(data: LoginRequest):
     db = SessionLocal()
@@ -75,6 +75,30 @@ def login(data: LoginRequest):
  
     token = create_token({"sub": str(user.userid), "username": user.username})
     return {"token": token, "username": user.username}
+
+#For DASHBOARD
+#GET income
+#GET Expenses
+@app.get("/dashboard")
+def get_dashboard(userid: int):
+    db = SessionLocal()
+#GET income
+#display income total? not sure how i want to show it for now
+    total_income = db.query(Income).filter(Income.userid == userid).all()
+    income_sum = sum(i.amount for i in total_income)
+#GET Expenses
+    total_expenses = db.query(Expense).filter(Expense.userid == userid).all()
+    expense_sum = sum(i.amount for i in total_expenses)
+
+    db.close()
+
+    return {"total_income": income_sum,
+            "total_expenses": expense_sum,
+            "balance": income_sum - expense_sum
+        }
+
+
+
 
 
  

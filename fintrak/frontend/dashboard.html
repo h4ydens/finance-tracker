@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+
+<html lang="en">
+<head>
+    <title>DashBoard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    
+    <nav>
+        <span class="logo">Fintrak</span>
+        <a href="dashboard.html" class="active">Dashboard</a>
+        <a href="expenses.html">Expenses</a>
+        <a href="income.html">Income</a>
+    </nav>
+
+    <div class="page">
+        <div class="page-title">Dashboard</div>
+        <div class="page-subtitle">Overview of your finances</div>
+        <!-- 4 tabs at the top with the title and total of that user-->
+        <div class="grid-4" style="margin-bottom:24px;">
+            <div class="card" style="margin-bottom:0;">
+                <div class="card-title">Total Income</div>
+                <div class="placeholder-block short">$-.--</div>
+            </div>
+            <div class="card" style="margin-bottom:0;">
+                <div class="card-title">Total Expenses</div>
+                <div class="placeholder-block short">$-.--</div>
+            </div>
+            <div class="card" style="margin-bottom:0;">
+                <div class="card-title">Net Balance</div>
+                <div class="placeholder-block short">$-.--</div>
+            </div>
+            <div class="card" style="margin-bottom:0;">
+                <div class="card-title">This Month</div>
+                <div class="placeholder-block short">$-.--</div>
+            </div>
+        </div>
+        <!--placeholder for graphs-->
+        <div class="grid-2">
+            <div class="card">
+                <div class="card-title">Spending by Category</div>
+                <div class="placeholder-block tall">Chart placeholder</div>
+            </div>
+            <div class="card">
+                <div class="card-title">Income vs Expenses Over Time</div>
+                <div class="placeholder-block tall">Chart placeholder</div>
+            </div>
+        </div>
+        <!--some more information-->
+        <div class="card">
+            <div class="card-title">Recent Transactions</div>
+            <div class="placeholder-block tall">Transactions list placeholder</div>
+        </div>
+    
+    </div>
+</body>
+</html>
