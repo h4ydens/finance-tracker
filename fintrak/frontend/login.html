@@ -51,7 +51,7 @@
                 errorEl.textContent = data.detail || "Invalid email or password.";
                 errorEl.style.display = "block";
             } else {
-                // Save token and username for use across pages
+                // local storage weird inbuilt javascript, .getItem to retrieve
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("username", data.username);
                 window.location.href = "dashboard.html";

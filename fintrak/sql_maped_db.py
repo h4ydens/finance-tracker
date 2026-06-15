@@ -24,7 +24,7 @@ class Income(Base):
     #columns
     incomeid = Column(Integer, primary_key=True)
     amount = Column(Integer, nullable=False)
-    date_recived = Column(Date)
+    date_received = Column(Date)
     description = Column(String(225))
 
     #fk
@@ -58,7 +58,7 @@ class Expense(Base):
 
     #fk
     userid = Column(Integer, ForeignKey("users.userid"))
-    Categoryid = Column(Integer, ForeignKey("categories.categoryid"))
+    categoryid = Column(Integer, ForeignKey("categories.categoryid"))
 
     #realations to query faster
     user = relationship("User", back_populates="expenses")

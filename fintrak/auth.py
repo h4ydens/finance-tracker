@@ -22,3 +22,4 @@ def create_token(data: dict) -> str:
 
 def decode_token(token: str) -> dict:
     return jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+#jwt is json web token, returns a string, needs to be decoded back to get user database dict entries

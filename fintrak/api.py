@@ -1,6 +1,9 @@
 import os
 
-from fastapi import FastAPI, HTTPException
+from datetime import date
+
+from fastapi import FastAPI, HTTPException, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy.orm import sessionmaker
@@ -8,10 +11,13 @@ from sqlalchemy.orm import sessionmaker
 
 from sql_connection import engine
 from sql_maped_db import User, Expense, Income, Category
-from auth import hash_password, verify_password, create_token
+from auth import hash_password, verify_password, create_token, decode_token
 
 app = FastAPI()
 SessionLocal = sessionmaker(bind=engine)
+
+#auto formats the incoming Authorization: Bearer <token> header from incoming requests
+security = HTTPBearer()
 
 
 #schemas
@@ -73,6 +79,8 @@ def login(data: LoginRequest):
     if not user or not verify_password(data.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid email or password")
  
+    #IMPORTENT TOKEN IS MADE HERE FOR USER
+    #user id is under "sub"
     token = create_token({"sub": str(user.userid), "username": user.username})
     return {"token": token, "username": user.username}
 
@@ -80,26 +88,33 @@ def login(data: LoginRequest):
 #GET income
 #GET Expenses
 @app.get("/dashboard")
-def get_dashboard(userid: int):
+def get_dashboard(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    token_data = decode_token(credentials.credentials)
+    userid = int(token_data["sub"])
+
     db = SessionLocal()
-#GET income
-#display income total? not sure how i want to show it for now
+
+
+    #GET income
+    #display income total? not sure how i want to show it for now
     total_income = db.query(Income).filter(Income.userid == userid).all()
     income_sum = sum(i.amount for i in total_income)
-#GET Expenses
+    #GET Expenses
     total_expenses = db.query(Expense).filter(Expense.userid == userid).all()
-    expense_sum = sum(i.amount for i in total_expenses)
+    expense_sum = sum(j.amount for j in total_expenses)
+
+    today = date.today()
+    #weird ass logic to get the data entry dates of 1 motnh
+    this_month = db.query(Expense).filter(Expense.userid == userid, Expense.date_spent >= date(today.year, today.month, 1)).all()
+    this_month_sum = sum(e.amount for e in this_month)
 
     db.close()
 
     return {"total_income": income_sum,
             "total_expenses": expense_sum,
-            "balance": income_sum - expense_sum
+            "balance": income_sum - expense_sum,
+            "this_month": this_month_sum
         }
-
-
-
-
 
  
 # serve /frontend, keep at end

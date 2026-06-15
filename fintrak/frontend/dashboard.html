@@ -22,19 +22,19 @@
         <div class="grid-4" style="margin-bottom:24px;">
             <div class="card" style="margin-bottom:0;">
                 <div class="card-title">Total Income</div>
-                <div class="placeholder-block short">$-.--</div>
+                <div class="placeholder-block short" id="total-income">Loading...</div>
             </div>
             <div class="card" style="margin-bottom:0;">
                 <div class="card-title">Total Expenses</div>
-                <div class="placeholder-block short">$-.--</div>
+                <div class="placeholder-block short" id="total-expenses">Loading...</div>
             </div>
             <div class="card" style="margin-bottom:0;">
                 <div class="card-title">Net Balance</div>
-                <div class="placeholder-block short">$-.--</div>
+                <div class="placeholder-block short" id="balance">Loading...</div>
             </div>
             <div class="card" style="margin-bottom:0;">
                 <div class="card-title">This Month</div>
-                <div class="placeholder-block short">$-.--</div>
+                <div class="placeholder-block short" id="this-month">Loading...</div>
             </div>
         </div>
         <!--placeholder for graphs-->
@@ -53,7 +53,27 @@
             <div class="card-title">Recent Transactions</div>
             <div class="placeholder-block tall">Transactions list placeholder</div>
         </div>
-    
     </div>
+    <script>
+        //get token
+        const token = localStorage.getItem("token")
+
+        // if not loged in take to login page
+        if(!token){
+            window.location.href = "login.html"
+        }
+        //fastapi looks in the request and grabs the auth token to return the data
+        fetch("/dashboard", {headers: {"Authorization": `Bearer ${token}`}})
+        //
+        .then(r => r.json())
+        .then(data => {
+            document.getElementById("total-income").textContent = "$" + data.total_income
+            document.getElementById("total-expenses").textContent = "$" + data.total_expenses
+            document.getElementById("balance").textContent        = "$" + data.balance
+            document.getElementById("this-month").textContent     = "$" + data.this_month
+        })
+        //throw error if fetch fails
+        .catch(err => console.error("Failed to load dashboard:", err))
+    </script>
 </body>
 </html>
