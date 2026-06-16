@@ -16,7 +16,7 @@
     </nav>
 
     <div class="page">
-        <div class="page-title">Dashboard</div>
+        <div class="page-title" id="user-name">Loading...</div> <!--add user id here-->
         <div class="page-subtitle">Overview of your finances</div>
         <!-- 4 tabs at the top with the title and total of that user-->
         <div class="grid-4" style="margin-bottom:24px;">
@@ -67,7 +67,7 @@
         //
         .then(r => r.json())
         .then(data => {
-            console.log(data)
+            document.getElementById("user-name").textContent = "Welcome, " + data.username
             document.getElementById("total-income").textContent = "$" + data.total_income
             document.getElementById("total-expenses").textContent = "$" + data.total_expenses
             document.getElementById("balance").textContent        = "$" + data.balance
@@ -77,6 +77,8 @@
             if (data.recent_transactions.length === 0) {
                 container.textContent = "No transactions yet"
             } 
+
+            //garbage temp method of storing each transaction in a new itteration
             else {
                 container.innerHTML = data.recent_transactions.map(t => `
                     <div style="display:grid; grid-template-columns:1fr 1fr 1fr; padding:12px 0; border-bottom:1px solid var(--border); align-items:center;">

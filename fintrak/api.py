@@ -94,6 +94,8 @@ def get_dashboard(credentials: HTTPAuthorizationCredentials = Depends(security))
 
     db = SessionLocal()
 
+    #GET USER NAME, token gives username
+    username = token_data["username"]
 
     #GET income
     #display income total? not sure how i want to show it for now
@@ -125,7 +127,8 @@ def get_dashboard(credentials: HTTPAuthorizationCredentials = Depends(security))
             "total_expenses": expense_sum,
             "balance": income_sum - expense_sum,
             "this_month": this_month_sum,
-            "recent_transactions": recent_list
+            "recent_transactions": recent_list,
+            "username": username
         }
 
  
