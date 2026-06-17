@@ -17,9 +17,56 @@
             <div class="page-subtitle">Track and manage your spending</div>
             
             <div class="grid-2">
-                <div class="card"></div>
+                <!--Entry form-->
+                <div class="card">
+                    <div class="card-title"> Add Expense</div>
+                    <!--Amount-->
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input type="number" placeholder="$0.00">
+                    </div>
+                    <!--Date-->
+                    <div class="form-group">
+                        <label>Date</label>
+                        <input type="date">
+                    </div>
+                    <!--Category-->
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select>
+                            <option>Select a Category</option>
+                            <option>placeholder - food</option>
+                            <option>placeholder - videogames</option>
+                        </select>
+                    </div>
+                    <!--Description-->
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" placeholder="Description">
+                    </div>
+                    <!--Enter Button-->
+                    <button class="btn btn-primary">Add Expense</button>
+                </div>
+                <!-- SUMMARY -->
+                 <div>
+                    <!--By month-->
+                    <div class="card">
+                        <div class="card-title">This Month</div>
+                        <div class="placeholder-block short">$ - total spent placeholder</div>
+                    </div>
+                    <!--By category-->
+                    <div class="card">
+                        <div class="card-title">By Category</div>
+                        <div class="placeholder-block">Category breakdown placeholder</div>
+                    </div>
+                    
+                 </div>
             </div>
-
+            <!--need to make a list of each expense id on a new tab-->
+            <div class="card">
+                <div class="card-title">All Expenses</div>
+                <div class="placeholder-block tall">Expenses table placeholder</div>
+            </div>
 
         </div>
 

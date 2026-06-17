@@ -12,6 +12,45 @@
             <a href="expenses.html">Expenses</a>
             <a href="income.html" class="active">Income</a>
         </nav>
-        
+
+        <!--page its all wrapped in-->
+        <div class="page">
+            <div class="page-title">USER's Income</div>
+            <div class="page-subtitle">Track and manage your income</div>
+
+            <!--Grid for the cards with info on them etc-->
+            <div class="grid-2">
+                <div class="card">
+                    <div class="card-title">Add Income</div>
+                    <!--Ammount-->
+                    <div class="form-group">
+                        <label>Amount</label>
+                        <input type="number" placeholder="$0.00">
+                    </div>
+                    <!--Date Recived-->
+                    <div class="form-group">
+                        <label>Date Recived</label>
+                        <input type="date">
+                    </div>
+                    <!--Description-->
+                    <div class="form-group">
+                        <label>Description</label>
+                        <input type="text" placeholder="e.g. Casino Operations">
+                    </div>
+                    <div class="btn btn-primary">Add Income</div>
+                </div>
+                <!--SUMMARY-->
+                <div class="card">
+                    <div class="card-title">This Month</div>
+                    <div class="placeholder-block short">$ - total recived palceholder</div>
+                </div>
+            </div>
+            <!--Figure out a way to make each incomeid a diff row of data in a table-->
+            <div class="card">
+                <div class="card-title">All Income</div>
+                <div class="placeholder-block tall">Income table placeholder</div>
+
+            </div>
+        </div>
     </body>
 </html>
