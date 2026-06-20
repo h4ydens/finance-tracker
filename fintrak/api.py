@@ -20,7 +20,7 @@ SessionLocal = sessionmaker(bind=engine)
 security = HTTPBearer()
 
 
-#schemas
+#schemas, needed for post
 
 class RegisterRequest(BaseModel):
     username: str
@@ -31,8 +31,19 @@ class LoginRequest(BaseModel):
     email:str
     password: str
 
+class ExpenseRequest(BaseModel):
+    amount:int
+    date_spent:date
+    description:str
+    categoryid:int
+
+class IncomeRequest(BaseModel):
+    amount:int
+    date_recived:date
+    description:str
 
 #endpoints
+
 #test get users query
 @app.get("/users")
 def get_users():
@@ -131,7 +142,73 @@ def get_dashboard(credentials: HTTPAuthorizationCredentials = Depends(security))
             "username": username
         }
 
- 
+#2 post and get apis for income and expenses
+#need to be able to enter and retrieve users expenses
+@app.post("/expenses")
+def create_expenses(data: ExpenseRequest, credentials:HTTPAuthorizationCredentials = Depends(security)):
+    token_data = decode_token(credentials.credentials)
+    userid = int(token_data["sub"])
+
+    db = SessionLocal()
+
+    max_expense = db.query(Expense).order_by(Expense.expenseid.desc()).first()
+    next_id = (max_expense.expenseid + 1) if max_expense else 1
+
+    new_expense = Expense(
+        expenseid = next_id,
+        amount = data.amount,
+        date_spent = data.date_spent,
+        description = data.description,
+        categoryid = data.categoryid,
+        userid=userid
+    )
+    db.add(new_expense)
+    db.commit()
+    db.close()
+
+    return {"message": "Expense added successfully"}
+
+@app.get("/expenses")
+def get_expenses(credentials: HTTPAuthorizationCredentials = Depends(security)):
+    token_data = decode_token(credentials.credentials)
+    userid = int(token_data["sub"])
+
+    db = SessionLocal()
+
+    #qury ts
+    expenses = db.query(Expense).filter(Expense.userid == userid).order_by(Expense.date_spent.desc()).all()
+    db.close()
+
+    #return gucha
+    return [
+        {
+            "expenseid": e.expenseid,
+            "amount": e.amount,
+            "date_spent": str(e.date_spent),
+            "description": e.description,
+            "categoryid": e.categoryid
+        }
+        for e in expenses
+    ]
+
+#need to be able to enter and retrieve users income
+@app.post("/income")
+def create_income(data: IncomeRequest, credentials:HTTPAuthorizationCredentials = Depends(security)):
+
+
+
+    return 1
+
+
+
+
+
+
+
+@app.get("/income")
+def get_income(credentials:HTTPAuthorizationCredentials = Depends(security)):
+
+    return 1
 # serve /frontend, keep at end
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app.mount("/", StaticFiles(directory=os.path.join(BASE_DIR, "frontend"), html=True), name="frontend")
