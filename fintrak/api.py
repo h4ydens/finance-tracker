@@ -39,7 +39,7 @@ class ExpenseRequest(BaseModel):
 
 class IncomeRequest(BaseModel):
     amount:int
-    date_recived:date
+    date_received:date
     description:str
 
 #endpoints
@@ -160,7 +160,7 @@ def create_expenses(data: ExpenseRequest, credentials:HTTPAuthorizationCredentia
         date_spent = data.date_spent,
         description = data.description,
         categoryid = data.categoryid,
-        userid=userid
+        userid = userid
     )
     db.add(new_expense)
     db.commit()
@@ -194,21 +194,53 @@ def get_expenses(credentials: HTTPAuthorizationCredentials = Depends(security)):
 #need to be able to enter and retrieve users income
 @app.post("/income")
 def create_income(data: IncomeRequest, credentials:HTTPAuthorizationCredentials = Depends(security)):
+    token_data = decode_token(credentials.credentials)
+    userid = int(token_data["sub"])
 
+    db = SessionLocal()
+    #get latest id number
+    max_income = db.query(Income).order_by(Income.incomeid.desc()).first()
+    next_id = (max_income.incomeid + 1) if max_income else 1
+    #post the entry
+    new_income = Income(
+            incomeid = next_id,
+            amount = data.amount,
+            date_received = data.date_received,
+            description = data.description,
+            userid = userid
+    )
+    db.add(new_income)
+    db.commit()
+    db.close()
 
-
-    return 1
-
-
-
-
-
+    return {"message": "Income added successfully"}
 
 
 @app.get("/income")
 def get_income(credentials:HTTPAuthorizationCredentials = Depends(security)):
+    token_data = decode_token(credentials.credentials)
+    userid = int(token_data["sub"])
 
-    return 1
+    db = SessionLocal()
+    #get income userid 
+    income = db.query(Income).filter(Income.userid == userid).order_by(Income.date_received.desc()).all()
+    db.close()
+
+
+    #return massive list
+    return [
+        {
+            "incomeid": i.incomeid,
+            "amount": i.amount,
+            "date_received": str(i.date_received),
+            "description": i.description
+        }
+        for i in income
+    ]
+
+
+
+
 # serve /frontend, keep at end
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app.mount("/", StaticFiles(directory=os.path.join(BASE_DIR, "frontend"), html=True), name="frontend")
