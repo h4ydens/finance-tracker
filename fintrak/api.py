@@ -253,8 +253,6 @@ def get_income(credentials:HTTPAuthorizationCredentials = Depends(security)):
     ]
 
 
-
-
 # serve /frontend, keep at end
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 app.mount("/", StaticFiles(directory=os.path.join(BASE_DIR, "frontend"), html=True), name="frontend")

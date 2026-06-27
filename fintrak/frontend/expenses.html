@@ -23,36 +23,39 @@
                     <!--Amount-->
                     <div class="form-group">
                         <label>Amount</label>
-                        <input type="number" placeholder="$0.00">
+                        <input type="number" id="amount" placeholder="$0.00">
                     </div>
                     <!--Date-->
                     <div class="form-group">
                         <label>Date</label>
-                        <input type="date">
+                        <input type="date" id="date_spent">
                     </div>
                     <!--Category-->
                     <div class="form-group">
                         <label>Category</label>
-                        <select>
-                            <option>Select a Category</option>
-                            <option>placeholder - food</option>
-                            <option>placeholder - videogames</option>
+                        <select id="categoryid">
+                            <option value="">Select a Category</option>
+                            <option value="1">Food</option>
+                            <option value="2">Transport</option>
+                            <option value="3">Entertainment</option>
+                            <option value="4">Utilities</option>
                         </select>
                     </div>
                     <!--Description-->
                     <div class="form-group">
                         <label>Description</label>
-                        <input type="text" placeholder="Description">
+                        <input type="text" id="description" placeholder="Description">
                     </div>
                     <!--Enter Button-->
-                    <button class="btn btn-primary">Add Expense</button>
+                    <div id="error-msg" style="display:none; color:#e07070; font-size:13px; margin-bottom:12px;"></div>
+                    <button class="btn btn-primary" onclick="addExpense()">Add Expense</button>
                 </div>
                 <!-- SUMMARY -->
                  <div>
                     <!--By month-->
                     <div class="card">
                         <div class="card-title">This Month</div>
-                        <div class="placeholder-block short">$ - total spent placeholder</div>
+                         <div id="this-month" style="padding: 8px 0;">Loading...</div>
                     </div>
                     <!--By category-->
                     <div class="card">
@@ -62,10 +65,10 @@
                     
                  </div>
             </div>
-            <!--need to make a list of each expense id on a new tab-->
+            <!--list of each expense id on a new tab-->
             <div class="card">
                 <div class="card-title">All Expenses</div>
-                <div class="placeholder-block tall">Expenses table placeholder</div>
+                <div id="expense-table" style="padding: 8px 0;">Loading...</div>
             </div>
 
         </div>
@@ -82,19 +85,88 @@
 
             //get username
             const username = localStorage.getItem("username")
-            document.getElementById("user-name").textContent = username + " 's Expenses"
+            document.getElementById("user-name").textContent = username + "'s Expenses"
             
             //Load Expenses
             function loadExpense(){
-                null
+                fetch("/expenses", {headers: {"Authorization": `Bearer ${token}` }})
+                .then(r => r.json())
+                .then(data => {
+                    // calculate this month
+                    const now = new Date()
+                    const thisMonthSum = data
+                        .filter(e => {
+                            const d = new Date(e.date_spent)
+                            return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+                        })
+                        .reduce((sum, e) => sum + e.amount, 0)
+
+                    document.getElementById("this-month").textContent = "$" + thisMonthSum
+
+                    const container = document.getElementById("expense-table")
+
+                    if (data.length === 0) {
+                        container.textContent = "No expenses yet"
+                        return
+                    }
+
+                    container.innerHTML = `
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; padding:8px 0; border-bottom:1px solid var(--border); margin-bottom:4px;">
+                            <span style="color:var(--text-muted); font-size:13px;">Description</span>
+                            <span style="color:var(--text-muted); font-size:13px; text-align:center;">Date</span>
+                            <span style="color:var(--text-muted); font-size:13px; text-align:right;">Amount</span>
+                        </div>
+                    ` + data.map(e => `
+                        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; padding:12px 0; border-bottom:1px solid var(--border); align-items:center;">
+                            <span>${e.description || "No description"}</span>
+                            <span style="text-align:center; color:var(--text-muted);">${e.date_spent}</span>
+                            <span style="text-align:right; color:#e07070;">-$${e.amount}</span>
+                        </div>
+                    `).join("")
+                })
+                .catch(err => console.error("Failed to load expenses:", err))
             }
-
-
 
             //Add Expense
-            function addExpense(){
-                null
+            function addExpense() {
+                const amount      = document.getElementById("amount").value
+                const date_spent  = document.getElementById("date_spent").value
+                const categoryid  = document.getElementById("categoryid").value
+                const description = document.getElementById("description").value
+                const errorEl     = document.getElementById("error-msg")
+
+                errorEl.style.display = "none"
+
+                if (!amount || !date_spent || !categoryid || !description) {
+                    errorEl.textContent = "Please fill in all fields."
+                    errorEl.style.display = "block"
+                    return
+                }
+
+                fetch("/expenses", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        amount:      parseInt(amount),
+                        date_spent,
+                        description,
+                        categoryid:  parseInt(categoryid)
+                    })
+                })
+                .then(r => r.json())
+                .then(() => {
+                    document.getElementById("amount").value = ""
+                    document.getElementById("date_spent").value = ""
+                    document.getElementById("categoryid").value = ""
+                    document.getElementById("description").value = ""
+                    loadExpense()
+                })
+                .catch(err => console.error("Failed to add expense:", err))
             }
+
             loadExpense()
         </script>
 
