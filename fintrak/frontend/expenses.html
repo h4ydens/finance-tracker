@@ -13,7 +13,7 @@
             <a href="income.html">Income</a>
         </nav>
         <div class="page">
-            <div class="page-title">USER's Expenses</div>
+            <div class="page-title" id="user-name">INVALID USER's Expenses</div>
             <div class="page-subtitle">Track and manage your spending</div>
             
             <div class="grid-2">
@@ -73,7 +73,29 @@
         
         <!-- stuff for adding income and viewing income of the user-->
         <script>
+            //get token
+            const token = localStorage.getItem("token")
+
+            if (!token){
+                window.location.href = "login.html"
+            }
+
+            //get username
+            const username = localStorage.getItem("username")
+            document.getElementById("user-name").textContent = username + " 's Expenses"
             
+            //Load Expenses
+            function loadExpense(){
+                null
+            }
+
+
+
+            //Add Expense
+            function addExpense(){
+                null
+            }
+            loadExpense()
         </script>
 
     </body>
