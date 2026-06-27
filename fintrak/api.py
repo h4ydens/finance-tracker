@@ -96,8 +96,6 @@ def login(data: LoginRequest):
     return {"token": token, "username": user.username}
 
 #For DASHBOARD
-#GET income
-#GET Expenses
 @app.get("/dashboard")
 def get_dashboard(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token_data = decode_token(credentials.credentials)
@@ -122,25 +120,41 @@ def get_dashboard(credentials: HTTPAuthorizationCredentials = Depends(security))
     this_month_sum = sum(e.amount for e in this_month)
 
     #show the history of expenses in bottom tab
-    recent = db.query(Expense).filter(Expense.userid == userid).order_by(Expense.date_spent.desc()).limit(5).all()
-    recent_list = [
+    recent_expenses = db.query(Expense).filter(Expense.userid == userid).all()
+    recent_income   = db.query(Income).filter(Income.userid == userid).all()
+
+    # combine into one list
+    combined = [
         {
-            "amount": e.amount,
+            "amount":      e.amount,
             "description": e.description,
-            "date": str(e.date_spent)
+            "date":        str(e.date_spent),
+            "type":        "expense"
         }
-        for e in recent
+        for e in recent_expenses
+    ] + [
+        {
+            "amount":      i.amount,
+            "description": i.description,
+            "date":        str(i.date_received),
+            "type":        "income"
+        }
+        for i in recent_income
     ]
+    #sort by date descending and take 5 most recent
+
+    recent_list = sorted(combined, key=lambda x: x["date"], reverse=True)[:5]
 
     db.close()
 
-    return {"total_income": income_sum,
-            "total_expenses": expense_sum,
-            "balance": income_sum - expense_sum,
-            "this_month": this_month_sum,
-            "recent_transactions": recent_list,
-            "username": username
-        }
+    return {
+        "total_income":        income_sum,
+        "total_expenses":      expense_sum,
+        "balance":             income_sum - expense_sum,
+        "this_month":          this_month_sum,
+        "recent_transactions": recent_list,
+        "username":            username
+    }
 
 #2 post and get apis for income and expenses
 #need to be able to enter and retrieve users expenses

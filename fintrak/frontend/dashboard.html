@@ -51,7 +51,7 @@
         <!--some more information-->
         <div class="card">
             <div class="card-title">Recent Transactions - 30d</div>
-            <div class="placeholder-block tall" id="recent-transactions">Loading...</div>
+            <div id="recent-transactions" style="padding: 8px 0;">Loading...</div>
         </div>
     </div>
     <script>
@@ -80,14 +80,22 @@
 
             //garbage temp method of storing each transaction in a new itteration
             else {
-                container.innerHTML = data.recent_transactions.map(t => `
+                container.innerHTML = `
+                    <div style="display:grid; grid-template-columns:1fr 1fr 1fr; padding:8px 0; border-bottom:1px solid var(--border); margin-bottom:4px;">
+                        <span style="color:var(--text-muted); font-size:13px;">Description</span>
+                        <span style="color:var(--text-muted); font-size:13px; text-align:center;">Date</span>
+                        <span style="color:var(--text-muted); font-size:13px; text-align:right;">Amount</span>
+                    </div>
+                ` + data.recent_transactions.map(t => `
                     <div style="display:grid; grid-template-columns:1fr 1fr 1fr; padding:12px 0; border-bottom:1px solid var(--border); align-items:center;">
                         <span>${t.description || "No description"}</span>
                         <span style="text-align:center; color:var(--text-muted);">${t.date}</span>
-                        <span style="text-align:right; color:#e07070;">-$${t.amount}</span>
+                        <span style="text-align:right; color:${t.type === "income" ? "var(--accent)" : "#e07070"};">
+                            ${t.type === "income" ? "+" : "-"}$${t.amount}
+                        </span>
                     </div>
                 `).join("")
-    }
+            }
         })
         //throw error if fetch fails
         .catch(err => console.error("Failed to load dashboard:", err))
